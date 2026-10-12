@@ -20,10 +20,20 @@ class MqttCom():
     def __run(self):
         self.client.loop_forever()
 
+    # Paho callback. Receives messages from broker as bytes
     def on_message(self, client, userdata, msg):
-        # print("msg: ", msg.payload)
-        # self.queue.append([msg.topic, msg.payload])
-        self.queue.append([msg.topic, json.loads(msg.payload)])
+        # Testing - print payload to terminal
+       # print("Received message: ", msg.payload)
+
+        # Convert payload to string, parse, and store in list
+        try:
+            parts = str(msg.payload.decode("utf-8")).split(",")
+            if len(parts) > 1:
+                xv = float(parts[0]) # Store values as floats
+                yv = float(parts[1])
+                self.queue.append([msg.topic, [xv,yv]])
+        except:
+            print("Bad message: invalid format")
 
     def register_handler(self, topic: str):
         self.client.subscribe(topic)
@@ -31,7 +41,8 @@ class MqttCom():
 async def msg_loop():
 
     mc = MqttCom("localhost")
-    mc.register_handler("example/#")
+    mc.register_handler("example/#")                # Topic for 07_MQTT_GEN.py example
+    mc.register_handler("R64_LOCATION_UPDATE/#")    # Topic for client updates via Row64 MQTT client mobile apps
 
     s64 = stream64("ws://localhost:9002?login=api")
     s64.set_output(command="UPSERT", db="Examples", table="Security")
@@ -43,12 +54,14 @@ async def msg_loop():
             while True:
                 try:
                     for topic,msg in mc.queue:
-                        # print(" xy: ", msg[0],",",msg[1])
+
+                        print(" xy: ", msg[0],",",msg[1])
+
                         msg = s64.gen_msg([0, msg[0], msg[1], 100])
                         await w.send(msg);
                         await w.recv()
                         # print((await w.recv()).decode('ascii')) # print debug feedback
-                        await asyn.sleep( .05 ) # delay in seconds
+                        #await asyn.sleep( .05 ) # delay in seconds
                     mc.queue = []
                 except:break
         except:await ws.close();continue # auto recovery & re-connect cycle

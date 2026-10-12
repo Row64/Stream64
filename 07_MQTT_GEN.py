@@ -47,7 +47,7 @@ def main():
 	while True:
 		xp = cx+rad*math.cos(ang)
 		yp = cy+rad*math.sin(ang)
-		val = "["  + str(xp) + ","+str(yp)+"]"
+		val = str(xp) + "," + str(yp)
 		mc.publish("example/id1/loc",val)
 		time.sleep(.015) # update rate in seconds
 		ang += aStep
