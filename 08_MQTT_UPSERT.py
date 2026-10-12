@@ -20,10 +20,24 @@ class MqttCom():
     def __run(self):
         self.client.loop_forever()
 
+    # Paho callback. Receives messages from broker as bytes
     def on_message(self, client, userdata, msg):
         # print("msg: ", msg.payload)
         # self.queue.append([msg.topic, msg.payload])
-        self.queue.append([msg.topic, json.loads(msg.payload)])
+        #self.queue.append([msg.topic, json.loads(msg.payload)])
+
+        # Testing - print payload to terminal
+        print("Received message: ", msg.payload)
+
+        # Convert payload to string, parse, and store in list
+        try:
+            parts = str(msg.payload.decode("utf-8")).split(",")
+            if len(parts) > 1:
+                xv = float(parts[0]) # Store values as floats
+                yv = float(parts[1])
+                self.queue.append([msg.topic, [xv,yv]])
+        except:
+            print("Bad message: invalid format")
 
     def register_handler(self, topic: str):
         self.client.subscribe(topic)
@@ -43,7 +57,9 @@ async def msg_loop():
             while True:
                 try:
                     for topic,msg in mc.queue:
-                        # print(" xy: ", msg[0],",",msg[1])
+
+                        print(" xy: ", msg[0],",",msg[1])
+
                         msg = s64.gen_msg([0, msg[0], msg[1], 100])
                         await w.send(msg);
                         await w.recv()
