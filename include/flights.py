@@ -39,9 +39,10 @@ def get_flight_pos(start_ll,end_ll,f_perc):
 class flights(object):
 	
 	def __init__(self):
-
+		
 		self.loaded = False
 		self.rows = []
+		self.load()
 
 	def load(self):
 		print("Running Air West Simulator")

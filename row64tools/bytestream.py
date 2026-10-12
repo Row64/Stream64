@@ -307,6 +307,13 @@ class bytestream:
             raise Exception (inDesc + " - requested entry of type: " + bytestream_types[inType])
         return kInd
 
+    def key_ind(self,inKey): # minimal get_key_ind with no error checking
+        kInd = -1
+        for ki in range(self.nb):
+            if self.keys[ki] == inKey:
+                kInd = ki
+                break
+        return kInd
 
     def key_exists(self, inKey):
         for ki in range(self.nb):
@@ -319,7 +326,25 @@ class bytestream:
         if(kInd==-1):return
         return bytestream_types[self.TL[kInd]]
 
-    # would never do this in C++, but the way pyObjects work you can get() and return many different types
+    def get_type_ind(self, inKey):
+        kInd = self.get_key_ind(inKey,"LogRecord",-1)
+        if(kInd==-1):return
+        return self.TL[kInd]
+
+    def get_size(self, inKey):
+        kInd = self.get_key_ind(inKey,"LogRecord",-1)
+        if(kInd==-1):return -1
+        eType = self.TL[kInd];
+        b = self.EL[kInd][0]
+        if(eType > 11 and eType <= 28): # 1D _vector
+            return struct.unpack('Q', self.B[b:b+i64step])[0]
+        elif(eType >= 35 and eType <= 45): # 2D _vector
+            return struct.unpack('Q', self.B[b:b+i64step])[0]
+        elif(eType ==54): # _vector of Streams
+            return struct.unpack('Q', self.B[b:b+i64step])[0]
+        return -1
+
+    # makes use of Python allowing the return of different types
     def get(self, inKey):
         kInd = self.get_key_ind(inKey,"log_record",-1)
         if(kInd==-1):return
@@ -486,6 +511,59 @@ class bytestream:
         kInd = self.get_key_ind(inKey,"get_stream",53)
         if(kInd==-1):return
         return self.B[self.EL[kInd][0]:self.EL[kInd][1]]
+
+    ############################## GET SINGLE ITEM FROM VECTOR 1D ################################
+
+    def get_int8_vector_item(self, inKeyInd, inInd):
+        b = self.EL[inKeyInd][0] + inInd * i8step + i64step
+        return struct.unpack('b', self.B[b:b+i8step])[0]
+
+    def get_uint8_vector_item(self, inKeyInd, inInd):
+        b = self.EL[inKeyInd][0] + inInd * i8step + i64step
+        return struct.unpack('B', self.B[b:b+i8step])[0]
+
+    def get_int16_vector_item(self, inKeyInd, inInd):
+        b = self.EL[inKeyInd][0] + inInd * i16step + i64step
+        return struct.unpack('h', self.B[b:b+i16step])[0]
+
+    def get_uint16_vector_item(self, inKeyInd, inInd):
+        b = self.EL[inKeyInd][0] + inInd * i16step + i64step
+        return struct.unpack('H', self.B[b:b+i16step])[0]
+
+    def get_int32_vector_item(self, inKeyInd, inInd):
+        b = self.EL[inKeyInd][0] + inInd * i32step + i64step
+        return struct.unpack('i', self.B[b:b+i32step])[0]
+
+    def get_uint32_vector_item(self, inKeyInd, inInd):
+        b = self.EL[inKeyInd][0] + inInd * i32step + i64step
+        return struct.unpack('I', self.B[b:b+i32step])[0]
+
+    def get_int64_vector_item(self, inKeyInd, inInd):
+        b = self.EL[inKeyInd][0] + inInd * i64step + i64step
+        return struct.unpack('q', self.B[b:b+i64step])[0]
+
+    def get_uint64_vector_item(self, inKeyInd, inInd):
+        b = self.EL[inKeyInd][0] + inInd * i64step + i64step
+        return struct.unpack('Q', self.B[b:b+i64step])[0]
+
+    def get_float_vector_item(self, inKeyInd, inInd):
+        b = self.EL[inKeyInd][0] + inInd * i32step + i64step
+        return struct.unpack('f', self.B[b:b+i32step])[0]
+
+    def get_double_vector_item(self, inKeyInd, inInd):
+        b = self.EL[inKeyInd][0] + inInd * i64step + i64step
+        return struct.unpack('d', self.B[b:b+i64step])[0]
+
+    def get_string_vector_item(self, inKeyInd, inInd):
+        b = self.EL[inKeyInd][0]
+        iCount = struct.unpack('Q', self.B[b:b+i64step])[0]
+        b+=i64step * inInd + i64step
+        lowerI = struct.unpack('Q', self.B[b:b+i64step])[0]
+        b+=i64step
+        upperI = struct.unpack('Q', self.B[b:b+i64step])[0]
+        b+=i64step * (iCount - inInd)
+        return str(self.B[lowerI+b:upperI+b],'ascii')
+
 
     ####################################### GET VECTOR 1D #######################################
 
@@ -698,7 +776,7 @@ class bytestream:
         return np.array(sList)
 
     def get_stream_vector(self, inKey):
-
+        
         kInd = self.get_key_ind(inKey,"get_stream_vector",54)
         if(kInd==-1):return
         b = self.EL[kInd][0]
@@ -1448,7 +1526,6 @@ class bytestream:
         bar += endBuf
         self.bufList.append(bar)
         self.lenList.append(len(bar))
-
 
 bytestream_types = [
     "none",

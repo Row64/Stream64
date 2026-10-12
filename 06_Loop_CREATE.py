@@ -6,16 +6,15 @@ import pandas as pd
 
 # Loop CREATE an entire table per update - demo: http://localhost/dash/examples/fleet
 async def msg_loop():
-    s64 = stream64()
-    s64.set_output(command="CREATE VERBOSE", db="Examples", table="CarSim")
+    s64 = stream64("ws://localhost:9002?login=api&v=2")
+    s64.set_output(command="CREATE", db="Examples", table="CarSim")
     s64.set_columns(["ID", "Lon", "Lat", "Clr", "Calm", "Speed"]) # replacement CREATE needs all columns
     s64.set_types(["int", "float", "float","int", "float", "float"])
     nbRows = 5000
     ids = list(range(0,nbRows))
     clrs = [0] * nbRows
     calm = speed = [.5] * nbRows
-    uri = "ws://localhost:9002?login=api"
-    async for w in ws.connect(uri, ping_interval=None, ping_timeout=None, close_timeout=None):
+    async for w in ws.connect(s64.url, ping_interval=None, ping_timeout=None, close_timeout=None):
         try:
             while True:
                 try:

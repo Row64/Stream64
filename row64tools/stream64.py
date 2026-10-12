@@ -1,4 +1,5 @@
 import os
+import sys
 import struct
 import numbers
 import re
@@ -6,19 +7,17 @@ import math
 
 from row64tools.bytestream import bytestream as bStream
 from row64tools import ramdb
-from row64tools.flights import flights
 
 BasicNames = ["null","int","bigint","float","bigfloat","text"]
 BasicTypes = [0,0,1,2,3,4,5,5,4,4,5,5,5,4,4,4,4,4,5,5,2]
 Steps = [0,4,8,4,8,10] # byte steps for each type
 ColumnTypes = ["drop","null","int","bigint","float","bigfloat","text","image","longitude","latitude","3dobj","pdf","url","xcord","ycord","zcord","xperc","yperc","note3d","note2d","datetime","timedelta"]
 
-
-
 class stream64(object):
 	
-	def __init__(self):
+	def __init__(self, in_url):
 
+		self.url = in_url
 		self.debug_to_file = False
 		self.RPath = ""
 		self.nb_cols = 0
@@ -26,9 +25,9 @@ class stream64(object):
 		self.rcol_names = [] # column names from ramdb file
 		self.rcol_types = [] # column types from ramdb file
 		self.rcol_sizes = [] # column sizes from ramdb file
-		self.col_names = [] # send names (different than rcol_names - INSERT can be a subset)
-		self.col_types = [] # send types (different than rcol_types - INSERT can be a subset)
-		self.col_sizes = [] # send sizes (different than rcol_sizes - INSERT can be a subset)
+		self.col_names = [] # send names (different than rcol_names - UPSERT can be a subset)
+		self.col_types = [] # send types (different than rcol_types - UPSERT can be a subset)
+		self.col_sizes = [] # send sizes (different than rcol_sizes - UPSERT can be a subset)
 		self.basic_types = []
 		self.col_map = []
 		self.Log = True
@@ -37,10 +36,16 @@ class stream64(object):
 		self.TableName = ""
 		self.KeyIndex = 0
 		self.verbose = False
-		self.flights = flights()
+		if "v=2" in self.url:self.verbose = True
 
-	def gen_flight_data(self,hour):return self.flights.gen_flight_data(hour)
-	def get_flight_time(self,hour):return self.flights.get_flight_time(hour)
+	def get_24h_timestr(self, inH):
+			hour = int(inH)
+			mdec = inH - hour
+			minutes = int(mdec * 60)
+			ap = "AM"
+			if hour < 1: hour = 12
+			elif hour > 12:ap="PM";hour -= 12
+			return str(hour)+":"+str(minutes).zfill(2) + " " + ap + " PDT"
 
 	def set_types(self, inTList):
 
@@ -76,9 +81,10 @@ class stream64(object):
 				else:
 					raise Exception("SYNTAX ERROR: set_types, type: "+key+" not found")
 
-	def get_folder(self):
-		return os.path.dirname(os.path.realpath(__file__))
-		
+	def get_folder(self): # get parent folder where the process was started             
+		pathname = os.path.dirname(sys.argv[0])
+		return os.path.abspath(pathname) 
+
 	def set_types_from_ramdb(self, inPath):
 		if self.col_set == False:
 			raise Exception("ERROR: Cannot set_types until set_columns has been called")
@@ -208,12 +214,19 @@ class stream64(object):
 		# Multi-Row Example: [["car1","car2"], [234.1,234.2], [52.2,52.3]]
 		
 		if self.TableName == "":raise Exception("gen_msg: Table name has not been set")
-		
+
 		multiList = False
 		nbRows = 1
 		if type(inList[0]) is list: 
 			multiList = True
 			nbRows = len(inList[0])
+			
+		if(multiList):
+			for i,ct in enumerate(self.basic_types):
+				size = len(inList[i])
+				if i != 0 and lastSize != size:
+					raise Exception("gen_msg: Column lengths do not match, producing an invalid dataframe")
+				lastSize = size
 
 		bs = bStream() # message bytestream
 		bs.add_string("Func","API")

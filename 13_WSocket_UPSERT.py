@@ -42,13 +42,12 @@ class Signal_IN():
 async def msg_loop():
     
     ins = Signal_IN("ws://localhost:9005?login=api")
-    s64 = stream64()
-    s64.set_output(command="UPSERT VERBOSE", db="Examples", table="Security")
+    s64 = stream64("ws://localhost:9002?login=api") # signal OUT to server
+    s64.set_output(command="UPSERT", db="Examples", table="Security")
     s64.set_columns(["Incident", "Longitude", "Latitude", "Count"])
-    ramdb_path = os.path.join(s64.get_folder(), "Security.ramdb")
+    ramdb_path = os.path.join(s64.get_folder(), "include/Security.ramdb")
     s64.set_types_from_ramdb(ramdb_path)
-    uri = "ws://localhost:9002?login=api"
-    async for w in ws.connect(uri, ping_interval=None, ping_timeout=None, close_timeout=None):
+    async for w in ws.connect(s64.url, ping_interval=None, ping_timeout=None, close_timeout=None):
         try:
             while True:
                 try:
