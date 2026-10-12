@@ -22,12 +22,8 @@ class MqttCom():
 
     # Paho callback. Receives messages from broker as bytes
     def on_message(self, client, userdata, msg):
-        # print("msg: ", msg.payload)
-        # self.queue.append([msg.topic, msg.payload])
-        #self.queue.append([msg.topic, json.loads(msg.payload)])
-
         # Testing - print payload to terminal
-        print("Received message: ", msg.payload)
+       # print("Received message: ", msg.payload)
 
         # Convert payload to string, parse, and store in list
         try:
@@ -45,7 +41,8 @@ class MqttCom():
 async def msg_loop():
 
     mc = MqttCom("localhost")
-    mc.register_handler("example/#")
+    mc.register_handler("example/#")                # Topic for 07_MQTT_GEN.py example
+    mc.register_handler("R64_LOCATION_UPDATE/#")    # Topic for client updates via Row64 MQTT client mobile apps
 
     s64 = stream64("ws://localhost:9002?login=api")
     s64.set_output(command="UPSERT", db="Examples", table="Security")
@@ -64,7 +61,7 @@ async def msg_loop():
                         await w.send(msg);
                         await w.recv()
                         # print((await w.recv()).decode('ascii')) # print debug feedback
-                        await asyn.sleep( .05 ) # delay in seconds
+                        #await asyn.sleep( .05 ) # delay in seconds
                     mc.queue = []
                 except:break
         except:await ws.close();continue # auto recovery & re-connect cycle
