@@ -20,10 +20,7 @@ class MqttCom():
     def __run(self):
         self.client.loop_forever()
 
-    # Paho callback. Receives messages from broker as bytes
     def on_message(self, client, userdata, msg):
-        # Testing - print payload to terminal
-       # print("Received message: ", msg.payload)
 
         # Convert payload to string, parse, and store in list
         try:
@@ -61,7 +58,7 @@ async def msg_loop():
                         await w.send(msg);
                         await w.recv()
                         # print((await w.recv()).decode('ascii')) # print debug feedback
-                        #await asyn.sleep( .05 ) # delay in seconds
+                        await asyn.sleep( .05 ) # delay in seconds
                     mc.queue = []
                 except:break
         except:await ws.close();continue # auto recovery & re-connect cycle
