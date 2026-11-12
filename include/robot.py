@@ -3,9 +3,9 @@ import math
 import numbers
 import math
 from row64tools.bytestream import bytestream as bStream
-from row64tools.geodist import geodist
-from row64tools.geom import geom
-from row64tools.geofence import geofence
+from include.geodist import geodist
+from include.geom import geom
+from include.geofence import geofence
 
 
 class robot(object):
