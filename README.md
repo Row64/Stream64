@@ -28,39 +28,18 @@ Building a minimal Stream64 Python script requires the following components:
 As an example, the following code is from the `01_Pandas_CREATE` script, which is the most basic example:
 
 ```
-# For sending async messages
 import asyncio as asyn
-
-# The communication protocol
 import websockets as ws
-
-# Stream API library
-from row64tools.stream64 import stream64
-
-# For the added functionality
+from include.stream64 import stream64
 import pandas as pd
 
-# Pandas CREATE a new .ramdb file only
-
-# Async function to send a single function
+# Pandas CREATE a new .ramdb file
 async def single_msg():
-
-    # Stream64 object initialization with server URL parameter
     s64 = stream64("ws://localhost:9002?login=api")
-
-    # Dataframe details
     df = pd.DataFrame( {"txt": ["a","b", "hello world"],"num": [1, 2, 3]} )
-
-    # Connect over WebSockets to Server using URL
     async with ws.connect(s64.url) as w:
-
-        # Message details
         msg = s64.msg_from_pandas(df, db="Temp", table="Pandas_Table1")
-
-        # Send message
         await w.send(msg);await w.recv()
-
-# Execute the async function defined above
 asyn.run(single_msg())
 ```
 
