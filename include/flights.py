@@ -31,8 +31,6 @@ def get_flight_pos(start_ll,end_ll,f_perc):
 	axis_of_rot = cross(start,end)
 	ang_of_rot = math.acos( dot(start, end) )
 	rot_quat = axisang_to_q(axis_of_rot, ang_of_rot * f_perc)
-	
-	# rot_quat = axisang_to_q(cross(start,end), math.acos( dot(start, end) ) * f_perc)
 	newStart = qv_mult(rot_quat, start)
 	return xyz_to_lon_lat(newStart)
 

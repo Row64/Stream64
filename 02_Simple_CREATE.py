@@ -1,9 +1,8 @@
 import asyncio as asyn
 import websockets as ws
-from row64tools.stream64 import stream64
-import pandas as pd
+from include.stream64 import stream64
 
-# Use CREATE VERBOSE to get debug / diagnostic feedback from the server
+# Use "&v=2" to get debug / diagnostic feedback from the server
 async def single_msg():
     s64 = stream64("ws://localhost:9002?login=api&v=2")
     # Example typo, correct with db="Temp"

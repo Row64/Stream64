@@ -2,8 +2,7 @@ import asyncio as asyn
 import websockets as ws
 import os
 import random
-from row64tools.stream64 import stream64
-import pandas as pd
+from include.stream64 import stream64
 
 async def single_msg():
     s64 = stream64("ws://localhost:9002?login=api&v=2")
