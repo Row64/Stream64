@@ -4,7 +4,7 @@
 
 # Stream64
 
-Stream64 is a powerful and robust API that enables live data to be sent to Row64 Server for instantaneous dashboard updates. Stream64 supports a variety of data formats and signal protocols to cover a broad range of use cases. When organizations need to process and visualize live data, the Stream API closes the gap between data retrieval and analysis.
+Stream64 is a powerful and robust API that enables live data to be sent to Row64 Server for instantaneous dashboard updates. Stream64 supports a variety of data formats and signal protocols to cover a broad range of use cases. When organizations need to process and visualize live data, the Stream API closes the gap between the flow of data and interactive analysis.
 
 The Stream API can stream different data types, including: dataframes, text, images, and emails.
 
