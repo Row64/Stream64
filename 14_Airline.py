@@ -1,16 +1,13 @@
 import asyncio as asyn
 import websockets as ws
 import random
-from row64tools.stream64 import stream64
-
+from include.stream64 import stream64
 from include.flights import flights
-
-import pandas as pd
 
 # CREATE flight pos: http://localhost/dash/examples/flights
 async def msg_loop():
     s64 = stream64("ws://localhost:9002?login=api")
-    s64.set_output(command="CREATE", db="Examples", table="Flights" )
+    s64.set_output(command="CREATE", db="Stream", table="Flights" )
     s64.set_columns(["flight id","origin","dest","dept","dur","lon","lat","night"]) 
     s64.set_types( ["int","text","text","float","float","bigfloat","bigfloat","int"] )
     

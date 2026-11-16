@@ -1,9 +1,9 @@
 import asyncio as asyn
 import websockets as ws
-from row64tools.stream64 import stream64
+from include.stream64 import stream64
 import pandas as pd
 
-# Pandas CREATE a new .ramdb file only
+# Pandas CREATE a new .ramdb file
 async def single_msg():
     s64 = stream64("ws://localhost:9002?login=api")
     df = pd.DataFrame( {"txt": ["a","b", "hello world"],"num": [1, 2, 3]} )

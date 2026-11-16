@@ -1,8 +1,7 @@
 import asyncio as asyn
 import websockets as ws
 import random
-from row64tools.stream64 import stream64
-import pandas as pd
+from include.stream64 import stream64
 
 # UPSERT multi-row lists, with demo: http://localhost/dash/examples/fleet
 async def single_msg():

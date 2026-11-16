@@ -5,7 +5,7 @@ import os
 import struct
 import random
 
-from row64tools.stream64 import stream64
+from include.stream64 import stream64
 from kafka import KafkaConsumer
 import json
 
