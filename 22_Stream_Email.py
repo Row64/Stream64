@@ -1,6 +1,6 @@
 # Send Email Example
 
-from row64tools.email64 import email64
+from include.email64 import email64
 
 e64 = email64()
 
