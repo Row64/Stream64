@@ -31,7 +31,6 @@ async def msg_loop():
                     await asyn.sleep( .03 ) # delay (in seconds) to manage update speed
                     
                     ftime = fgen.get_flight_time(hour)
-                    print(ftime)
                     msg2 = s642.gen_msg([ftime])
                     await w.send(msg2)
                     await w.recv()
