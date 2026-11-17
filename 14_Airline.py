@@ -12,7 +12,7 @@ async def msg_loop():
     s64.set_types( ["int","text","text","float","float","bigfloat","bigfloat","int"] )
     
     s642 = stream64("ws://localhost:9002?login=api")
-    s642.set_output(command="CREATE", db="Examples", table="FlightTime" )
+    s642.set_output(command="CREATE", db="Stream", table="FlightTime" )
     s642.set_columns(["time"])
     s642.set_types( ["text"] )
 
@@ -31,8 +31,9 @@ async def msg_loop():
                     await asyn.sleep( .03 ) # delay (in seconds) to manage update speed
                     
                     ftime = fgen.get_flight_time(hour)
+                    print(ftime)
                     msg2 = s642.gen_msg([ftime])
-                    await w.send(msg2);
+                    await w.send(msg2)
                     await w.recv()
                     hour+=.01
                     if hour >= 24:hour = 0
