@@ -1,7 +1,7 @@
 import asyncio as asyn
 import websockets as ws
 import random
-from row64tools.motion import motion
+from include.motion import motion
 
 
 async def publish_loop():
