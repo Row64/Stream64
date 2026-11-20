@@ -16,7 +16,7 @@ async def msg_loop():
     s64 = stream64("ws://localhost:9002?login=api")
     s64.set_output(command="UPSERT", db="Examples", table="Security")
     s64.set_columns(["Incident", "Longitude", "Latitude","Count"])
-    ramdb_path = os.path.join(s64.get_folder(), "Security.ramdb")
+    ramdb_path = os.path.join(s64.get_folder(), "include/Security.ramdb")
     s64.set_types_from_ramdb(ramdb_path)
     
     async for w in ws.connect(s64.url, ping_interval=None, ping_timeout=None, close_timeout=None):

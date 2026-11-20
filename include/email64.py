@@ -45,14 +45,15 @@ class email64:
 		self.email_recipient = loaded_config["EMAIL_RECIPIENT"]
 		self.email_subject = loaded_config["EMAIL_SUBJECT"]
 
-		print("\nGot config from file:\n")
-		print("email_sender: " + self.email_sender)
-		print("smtp: " + self.smtp)
-		print("port: " + str(self.port))
-		print("Password file path: " + self.path_pwd)
-		print("Key file path: " + self.path_key)
-		print("Email recipient: " + self.email_recipient)
-		print("Email subject: " + self.email_subject + "\n")
+		# Optional output - Good for testing config
+		# print("\nGot config from file:\n")
+		# print("email_sender: " + self.email_sender)
+		# print("smtp: " + self.smtp)
+		# print("port: " + str(self.port))
+		# print("Password file path: " + self.path_pwd)
+		# print("Key file path: " + self.path_key)
+		# print("Email recipient: " + self.email_recipient)
+		# print("Email subject: " + self.email_subject + "\n")
 
 		msg = EmailMessage()
 		msg["to"] = self.email_recipient
@@ -60,7 +61,8 @@ class email64:
 		else: msg["subject"] = self.email_subject
 		msg.set_content(body)
 
-		print("Pending email will use the following values (note that if these values differ than those in the config file, overrides are being applied at the function's call):\n")
+		# Optional output
+		print("Pending email will use the following values.\nIf these values differ than those in the config, overrides are being applied at the function's call.\n")
 		print(f"Recipient: {msg["to"]}")
 		print(f"Subject: {msg["subject"]}")
 		print(f"Body: {msg.get_content()}\n")
@@ -144,8 +146,8 @@ class email64:
 		in_sender = input("Sending email address: ")
 		in_smtp = input("SMTP server (e.g. smtp.gmail.com): ")
 		in_port = input(f"Port number (i.e. 465 for Gmail or 587 for M365): ")
-		in_path_pwd = input(f"Password file path with file name and extension (e.g. ~/Documents/password.txt) (leave blank for default of {self.path_pwd}): ")
-		in_path_key = input(f"Key file path with file name and extension (e.g. ~/Documents/key.txt) (leave blank for default of {self.path_key}). It is highly recommended to store this key in a secure location. Please manage responsibly. Enter key file path: ")
+		in_path_pwd = input(f"Password file path with file name and extension (e.g. /home/[USER]/Documents/password.txt) (leave blank for default of {self.path_pwd}): ")
+		in_path_key = input(f"Key file path with file name and extension (e.g. /home/[USER]/Documents/key.txt) (leave blank for default of {self.path_key}). It is highly recommended to store this key in a secure location. Please manage responsibly. Enter key file path: ")
 		in_email_recipient = input("Email recipient: ")
 		in_email_subject = input("Email subject: ")
 
@@ -165,7 +167,7 @@ class email64:
 		print(f"Key file path: {self.path_key}")
 		print(f"Email recipient: {self.email_recipient}")
 		print(f"Email subject: {self.email_subject}")
-		verify = input("\nIf these values are correct, select ENTER. To redo, input 'r': ")
+		verify = input("\nIf these values are correct, select ENTER. To redo, input the character 'r': ")
 
 		match verify:
 			case "r":
